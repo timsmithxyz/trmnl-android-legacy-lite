@@ -19,14 +19,14 @@ public class Prefs {
       .putString("base", baseUrl)
       .putString("token", token)
       .putBoolean("configured", true)
-      .apply();
+      .commit();
   }
 
-  public void clearConfigured(){ sp.edit().putBoolean("configured", false).apply(); }
+  public void clearConfigured(){ sp.edit().putBoolean("configured", false).commit(); }
 
   public void setOrientation(String orientation){
     String o = ORIENTATION_LANDSCAPE.equals(orientation) ? ORIENTATION_LANDSCAPE : ORIENTATION_PORTRAIT;
-    sp.edit().putString("orientation", o).apply();
+    sp.edit().putString("orientation", o).commit();
   }
 
   public String orientation(){ return sp.getString("orientation", ORIENTATION_LANDSCAPE); }

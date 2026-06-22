@@ -1,11 +1,13 @@
 package com.trmnl.legacylite;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,18 +15,16 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
   private static final String FALLBACK_IMAGE_URL = "https://trmnl.com/images/system_screens/setup_logo/og_plus.png";
 
-  // Stage 1 full-refresh fallback settings (safe on Android 5.1.1)
   private static final boolean ENABLE_FULL_REFRESH_CYCLE = true;
   private static final long FULL_REFRESH_BLACK_HOLD_MS = 1000;
   private static final long FULL_REFRESH_WHITE_HOLD_MS = 1000;
   private static final int FULL_REFRESH_CYCLES = 3;
+
+  private static final int CONFIG_REQUEST = 1;
 
   private Prefs prefs;
   private ApiClient api;
@@ -35,15 +35,6 @@ public class MainActivity extends AppCompatActivity {
   private final Handler h = new Handler(Looper.getMainLooper());
   private int refreshSec = 60;
   private int consecutiveImageFailures = 0;
-
-  private final ActivityResultLauncher<Intent> configLauncher = registerForActivityResult(
-      new ActivityResultContracts.StartActivityForResult(), r -> {
-        if (prefs.configured()) {
-          recreate();
-        } else {
-          openConfig();
-        }
-      });
 
   @Override protected void onCreate(Bundle b){
     super.onCreate(b);
@@ -70,7 +61,20 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void openConfig(){
-    configLauncher.launch(new Intent(this, ConfigActivity.class));
+    startActivityForResult(new Intent(this, ConfigActivity.class), CONFIG_REQUEST);
+  }
+
+  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    super.onActivityResult(requestCode, resultCode, data);
+    if(requestCode == CONFIG_REQUEST){
+      if(prefs.configured()){
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
+      } else {
+        openConfig();
+      }
+    }
   }
 
   private void loadNext(){
@@ -108,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void runFullRefreshPhase(int phaseIndex, Runnable onComplete){
-    int totalPhases = FULL_REFRESH_CYCLES * 2; // black+white per cycle
+    int totalPhases = FULL_REFRESH_CYCLES * 2;
     if (phaseIndex >= totalPhases) {
       onComplete.run();
       return;
@@ -213,9 +217,29 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
+  @SuppressWarnings("deprecation")
   private void immersive(){
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    View d=getWindow().getDecorView();
-    d.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    if (Build.VERSION.SDK_INT >= 11) {
+      ImmersiveHelper.apply(getWindow().getDecorView());
+    }
+  }
+
+  // Isolated in a separate class to avoid VerifyError on API < 11
+  private static class ImmersiveHelper {
+    @SuppressWarnings("deprecation")
+    static void apply(View decor) {
+      int flags = 0;
+      if (Build.VERSION.SDK_INT >= 14) {
+        flags |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+      }
+      if (Build.VERSION.SDK_INT >= 16) {
+        flags |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+      }
+      if (Build.VERSION.SDK_INT >= 19) {
+        flags |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+      }
+      decor.setSystemUiVisibility(flags);
+    }
   }
 }

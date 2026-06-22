@@ -1,14 +1,14 @@
 package com.trmnl.legacylite;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class ConfigActivity extends AppCompatActivity {
+public class ConfigActivity extends Activity {
   private Spinner modeSpinner;
   private Spinner orientationSpinner;
   private EditText baseEdit, tokenEdit;

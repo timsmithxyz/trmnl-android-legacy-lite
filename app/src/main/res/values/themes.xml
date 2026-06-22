@@ -1,3 +1,3 @@
 <resources>
-  <style name="Theme.TrmnlLegacyLite" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+  <style name="Theme.TrmnlLegacyLite" parent="@android:style/Theme.NoTitleBar" />
 </resources>
