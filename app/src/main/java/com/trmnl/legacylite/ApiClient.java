@@ -83,7 +83,7 @@ public class ApiClient {
         int rr = j.optInt("refresh_rate", j.optInt("refreshRate", 60));
         if(rr<=0) rr=60;
 
-        if(image==null || image.trim().isEmpty()){
+        if(image==null || image.trim().length()==0){
           String msg = first(j.optString("error", null), j.optString("message", null), "No image URL in response");
           String debug = diagPrefix + "\n" + body;
           cb.onResult(new Result(false,msg,null,rr,false,true,debug));
@@ -167,6 +167,6 @@ public class ApiClient {
     while(b.endsWith("/")) b=b.substring(0,b.length()-1);
     return b;
   }
-  private String first(String... vals){ for(String s: vals){ if(s!=null && !s.trim().isEmpty()) return s; } return null; }
+  private String first(String... vals){ for(String s: vals){ if(s!=null && s.trim().length()>0) return s; } return null; }
   private String read(InputStream is) throws Exception { byte[] buf=new byte[4096]; int n; StringBuilder sb=new StringBuilder(); while((n=is.read(buf))!=-1){ sb.append(new String(buf,0,n)); } return sb.toString(); }
 }

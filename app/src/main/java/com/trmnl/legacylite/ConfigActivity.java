@@ -70,8 +70,8 @@ public class ConfigActivity extends Activity {
   private void validate(){
     saveBtn.setEnabled(false); holder.bmp=null; preview.setImageDrawable(null);
     message.setText("Validating...");
-    String token=tokenEdit.getText().toString().trim(); if(token.isEmpty()){ message.setText("Token is required."); return; }
-    String base=selectedBase(); if(selectedMode().equals(Prefs.MODE_BYOS)&&base.isEmpty()){ message.setText("Base URL is required for BYOS."); return; }
+    String token=tokenEdit.getText().toString().trim(); if(token.length()==0){ message.setText("Token is required."); return; }
+    String base=selectedBase(); if(selectedMode().equals(Prefs.MODE_BYOS)&&base.length()==0){ message.setText("Base URL is required for BYOS."); return; }
     api.getDisplay(base, token, r -> runOnUiThread(() -> {
       if(r.ok && r.bitmap!=null){
         holder.bmp=r.bitmap;
@@ -82,7 +82,7 @@ public class ConfigActivity extends Activity {
         preview.setImageDrawable(null);
         String header = r.message==null?"Device not found or no image returned.":r.message;
         String json = prettyJson(r.rawBody);
-        if(json==null || json.trim().isEmpty()) {
+        if(json==null || json.trim().length()==0) {
           message.setText(header);
         } else {
           message.setText(header + "\n\n" + json);
@@ -101,7 +101,7 @@ public class ConfigActivity extends Activity {
   }
 
   private String prettyJson(String raw){
-    if(raw == null || raw.trim().isEmpty()) return null;
+    if(raw == null || raw.trim().length()==0) return null;
     String t = raw.trim();
     try {
       if(t.startsWith("{")) return new JSONObject(t).toString(2);

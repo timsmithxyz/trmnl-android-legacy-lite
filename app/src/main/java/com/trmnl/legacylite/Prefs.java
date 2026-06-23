@@ -37,7 +37,7 @@ public class Prefs {
 
   public boolean configured(){
     boolean flag = sp.getBoolean("configured", false);
-    return flag && !token().trim().isEmpty() && (MODE_BYOD.equals(mode()) || !base().trim().isEmpty());
+    return flag && token().trim().length() > 0 && (MODE_BYOD.equals(mode()) || base().trim().length() > 0);
   }
 
   public String effectiveBase(){ return MODE_BYOD.equals(mode()) ? TRMNL_BASE : base().trim(); }
