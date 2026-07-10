@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -58,6 +59,21 @@ public class MainActivity extends Activity {
   @Override protected void onPause(){
     super.onPause();
     h.removeCallbacksAndMessages(null);
+  }
+
+  @Override public boolean onKeyDown(int keyCode, KeyEvent event){
+    switch(keyCode){
+      case 93: // load next playlist image
+      case 95:
+        if(prefs.configured()) loadNext();
+        return true;
+      case 92: // full display refresh
+      case 94:
+        if(prefs.configured()) debugTriggerFullRefreshCycle();
+        return true;
+      default:
+        return super.onKeyDown(keyCode, event);
+    }
   }
 
   private void openConfig(){
