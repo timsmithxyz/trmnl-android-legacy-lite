@@ -236,6 +236,7 @@ public class MainActivity extends Activity {
   @SuppressWarnings("deprecation")
   private void immersive(){
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     if (Build.VERSION.SDK_INT >= 11) {
       ImmersiveHelper.apply(getWindow().getDecorView());
     }
